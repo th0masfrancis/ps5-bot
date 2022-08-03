@@ -18,6 +18,9 @@ To activate the virtual environment run `bash ./scripts/activate.sh` on Mac/Linu
 
 ## Set up
 
+## Requirements
+pip install -r requirements.txt
+
 ### Environment variables
 
 Duplicate the `.sample-env` file and rename it `.env`. Fill out the variables as described below.

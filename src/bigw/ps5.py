@@ -6,8 +6,10 @@ import chromedriver_binary
 import logging
 import logging.config
 import os
+import time
 
 from bigw.cart import add_to_cart
+from bigw.postcode import update_postcode
 from bigw.checkout import proceed_to_checkout
 from bigw.order_confirmation import get_order_data
 from bigw.payment import enter_cvv_saved_credit_card, pay_with_credit_card, proceed_to_payment, redeem_rewards_points, select_payment_method
@@ -31,12 +33,13 @@ def find_and_buy_ps5(test_mode):
     success_flag = False
 
     # Constants
+    POSTCODE = os.environ.get('POSTCODE')
     CVV = os.environ.get('CVV')
     PROFILE_NAME = os.environ.get('PROFILE_NAME')
     PS5_URLS = [
         'https://www.bigw.com.au/product/playstation-5-console/p/124625/',  # PlayStation 5 Console
     ] if not test_mode else [
-        'https://www.bigw.com.au/product/razer-wolverine-v2-controller-xbox/p/133727/',  # Online only in stock
+        'https://www.bigw.com.au/product/fifa-22-ps5/p/175654',  # Online only in stock
     ]
     CART_URL = 'https://www.bigw.com.au/cart'
 
@@ -64,6 +67,11 @@ def find_and_buy_ps5(test_mode):
 
             # Navigate to URL
             wd.get(URL)
+            # wait few seconds 
+            logger.info('Waiting for page load')
+            time.sleep(1)
+            update_postcode(POSTCODE)
+            
             wd.save_screenshot('output/{}_ps5.png'.format(datetime.now().strftime('%Y%m%d_%H%M%S')))
 
             # Add to cart if available
@@ -76,7 +84,7 @@ def find_and_buy_ps5(test_mode):
             break
 
         if not item_in_cart:
-            logger.info('No items in stock, stopping')
+            logger.info('No items in cart, stopping')
 
             # Quit Chrome
             wd.close()
